@@ -10,6 +10,11 @@
   "code": {
     "coding": [
       {
+        "system": "http://loinc.org",
+        "code": "29770-5",
+        "display": "Karyotype [Identifier] in Bld or Tiss Nominal"
+      },
+      {
         "system": "http://snomed.info/sct",
         "code": "117010004",
         "display": "Karyotype determination"

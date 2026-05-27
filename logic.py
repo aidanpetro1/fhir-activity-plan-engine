@@ -16,10 +16,26 @@ from fhir.resources.flag import Flag
 from fhirpathpy import compile
 
 
+# Constant FHIRPath expressions are compiled once at import time so we don't
+# pay the compile cost on every patient.
+_GET_DOB = compile("Patient.birthDate")
+
+
 # --- Loaders ---
 
 def load_fixtures(fixtures_dir):
-    """Load PlanDefinitions and ActivityDefinitions from fixture directories."""
+    """Load PlanDefinitions and ActivityDefinitions from fixture directories.
+
+    Also precompiles every FHIRPath applicability condition found on plan
+    actions, returning them in a dict keyed by ``(plan.id, action.id)``. This
+    means apply_plan never calls ``compile()`` in its hot path, and a
+    malformed FHIRPath expression fails loudly at fixture-load time rather
+    than the first patient unlucky enough to trigger it — which is the
+    behavior we want for clinical knowledge artifacts.
+
+    Returns:
+        (activity_definitions, plan_definitions, compiled_conditions)
+    """
     base_path = Path(fixtures_dir)
 
     plan_definitions = {}
@@ -35,7 +51,23 @@ def load_fixtures(fixtures_dir):
             r = PlanDefinition(**json.load(file))
             plan_definitions[r.id] = r
 
-    return activity_definitions, plan_definitions
+    # Precompile all applicability conditions. We mirror apply_plan and only
+    # walk top-level plan.action entries (no nested action[] traversal).
+    compiled_conditions = {}
+    for plan in plan_definitions.values():
+        for action in (plan.action or []):
+            if not action.condition:
+                continue
+            expr_str = action.condition[0].expression.expression
+            try:
+                compiled_conditions[(plan.id, action.id)] = compile(expr_str)
+            except Exception as e:
+                raise ValueError(
+                    f"Failed to compile FHIRPath in PlanDefinition "
+                    f"'{plan.id}', action '{action.id}': {expr_str!r} ({e})"
+                )
+
+    return activity_definitions, plan_definitions, compiled_conditions
 
 
 def load_patient_data(patient_dir):
@@ -78,11 +110,11 @@ def build_fhirpath_context(observations,procedures):
         "Procedure": [proc.dict() for proc in procedures.values()]
     }
 
-def evaluate_condition(condition, context):
-    """Evaluate a FHIRPath applicability condition against an observation context.
-    Returns True if the action should apply, False if it should be skipped."""
-    expr_str = condition[0].expression.expression
-    check = compile(expr_str)
+def evaluate_condition(check, context):
+    """Evaluate a precompiled FHIRPath applicability condition against an
+    observation context. ``check`` is the compiled callable produced by
+    ``load_fixtures``. Returns True if the action should apply, False if it
+    should be skipped."""
     result = check({}, {"observations": context["Observation"], "procedures": context["Procedure"]})
     return bool(result and result[0])
 
@@ -161,12 +193,16 @@ def has_encounter_in_window(encounters, code, low=None, high=None):
 
 # --- Core Logic ---
 
-def apply_plan(patient, activity_definitions, plan_definitions, observations=None, procedures=None, encounters=None):
+def apply_plan(patient, activity_definitions, plan_definitions, compiled_conditions,
+               observations=None, procedures=None, encounters=None):
     """Apply PlanDefinitions to a patient, generating scheduled ServiceRequests.
-    Evaluates FHIRPath conditions against observations to determine which actions apply."""
+    Evaluates FHIRPath conditions against observations to determine which
+    actions apply.
 
-    get_dob = compile("Patient.birthDate")
-    dob = get_dob(patient.dict())[0]
+    ``compiled_conditions`` is the dict of precompiled FHIRPath callables
+    returned by ``load_fixtures``, keyed by ``(plan.id, action.id)``."""
+
+    dob = _GET_DOB(patient.dict())[0]
     today = date.today()
 
     scheduled_dates = {}
@@ -180,7 +216,8 @@ def apply_plan(patient, activity_definitions, plan_definitions, observations=Non
             # Evaluate applicability conditions
             condition_text = None
             if activity.condition:
-                if not evaluate_condition(activity.condition, context):
+                check = compiled_conditions[(plan.id, activity.id)]
+                if not evaluate_condition(check, context):
                     continue
                 condition_text = activity.condition[0].expression.description
 
@@ -342,10 +379,11 @@ if __name__ == "__main__":
     fixtures_path = "C:/T21/fixtures"
     patient_path = sys.argv[1] if len(sys.argv) > 1 else "C:/T21/patients/patient-1"
 
-    activity_definitions, plan_definitions = load_fixtures(fixtures_path)
+    activity_definitions, plan_definitions, compiled_conditions = load_fixtures(fixtures_path)
     patient, observations, procedures, encounters = load_patient_data(patient_path)
     service_requests, scheduled_dates, flags = apply_plan(
-        patient, activity_definitions, plan_definitions, observations, procedures, encounters
+        patient, activity_definitions, plan_definitions, compiled_conditions,
+        observations, procedures, encounters
     )
 
     # Reconcile against persisted SRs
