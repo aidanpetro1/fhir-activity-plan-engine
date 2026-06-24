@@ -1,0 +1,13 @@
+# T21 SMART on FHIR app — Python dependencies
+# Engine deps (must match the versions the engine was written against):
+fhir.resources>=8.0,<9.0    # typed FHIR models; engine + app use the R4B submodule
+fhirpathpy                  # FHIRPath evaluation for applicability conditions
+python-dateutil             # relativedelta date math
+
+# Web app deps:
+Flask>=3.0                  # web server + routing + sessions
+requests>=2.31              # HTTP for SMART discovery / token / FHIR calls
+python-dotenv>=1.0          # optional: load .env (app also works with plain env vars)
+
+# CDS Hooks service (optional; only needed to verify Epic's signed JWT in prod):
+PyJWT[crypto]>=2.8          # JWT + JWKS validation for /cds-services calls

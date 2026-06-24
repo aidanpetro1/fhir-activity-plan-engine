@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trisomy 21 Health Supervision — Emma Rodriguez</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #F9F8F6;
+  --bg2:          #F0EEE9;
+  --text:         #1A1916;
+  --text2:        #6B6963;
+  --text3:        #A8A49D;
+  --border:       #E5E3DE;
+  --border2:      #D1CFC9;
+  /* single accent for "action needed" items — no urgency grading */
+  --accent:       #3B6FD4;
+  --accent-bg:    #EFF4FF;
+  --accent-border:#BFCFEF;
+  --green-bg:     #E1F5EE;
+  --green-text:   #0F6E56;
+  --green-dot:    #1D9E75;
+  --blue:         #3B82F6;
+  --btn-hover:    #3A3833;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── Two-column body ── */
+.two-col { display: flex; gap: 12px; align-items: flex-start; }
+.left-col { width: 220px; flex-shrink: 0; }
+.right-col { flex: 1; min-width: 0; }
+
+/* ── Discuss card ── */
+.discuss-card {
+  background: var(--bg2); border-radius: 8px;
+  padding: 10px 12px; border: 0.5px solid var(--border);
+}
+.card-title {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--blue); margin-bottom: 1px;
+}
+
+.discuss-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.discuss-item {
+  display: flex; align-items: flex-start; gap: 7px;
+  position: relative;
+}
+.discuss-check {
+  width: 14px; height: 14px; border-radius: 3px;
+  border: 1.5px solid var(--border2);
+  background: white; cursor: pointer; flex-shrink: 0;
+  margin-top: 1px; appearance: none; -webkit-appearance: none;
+  transition: all 0.15s;
+}
+.discuss-check:checked {
+  background: var(--blue); border-color: var(--blue);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 5l2.5 2.5L8 3' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: center;
+}
+.discuss-label {
+  font-size: 11px; color: var(--text2); line-height: 1.4;
+  cursor: pointer; flex: 1; position: relative;
+}
+.discuss-label.checked { color: var(--text3); text-decoration: line-through; }
+.discuss-label:hover { color: var(--text); }
+
+
+/* ── Controls ── */
+.controls {
+  display: flex; gap: 6px; align-items: center;
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+.tab {
+  font-size: 11px; padding: 3px 12px; border-radius: 12px;
+  border: 0.5px solid var(--border2); cursor: pointer;
+  background: transparent; color: var(--text3); transition: all 0.15s;
+}
+.tab:hover { background: var(--bg2); color: var(--text); }
+.tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+/* ── Section ── */
+.section-block { margin-bottom: 10px; }
+.sec-head {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--text3);
+  padding: 8px 0 3px; border-bottom: 0.5px solid var(--border);
+  margin-bottom: 4px;
+}
+.sec-schedule {
+  font-size: 11px; color: var(--text3); line-height: 1.5;
+  padding: 5px 0 8px; border-bottom: 0.5px solid var(--border);
+  margin-bottom: 6px;
+}
+.items-grid { display: flex; flex-direction: column; gap: 3px; }
+
+/* ── Item ── */
+.item {
+  border-radius: 7px; border: 0.5px solid var(--border);
+  background: white; overflow: hidden;
+}
+.item.is-overdue { border-left: 2.5px solid #3B6FD4; }
+.item.is-due     { border-left: 2.5px solid #3B6FD4; }
+
+.item-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 9px; cursor: pointer;
+}
+.item-row:hover { background: var(--bg); }
+
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0; align-self: flex-start; margin-top: 3px;
+}
+.dot-ov { background: #3B6FD4; }
+.dot-du { background: #3B6FD4; }
+.dot-ok { background: var(--green-dot); }
+.dot-na { background: #D3D1C7; }
+
+.item-main  { flex: 1; min-width: 0; }
+.item-name  { font-size: 12.5px; font-weight: 500; line-height: 1.3; }
+.item-sub   { font-size: 10.5px; color: var(--text2); margin-top: 2px; }
+.item-result { font-size: 12px; color: var(--text); margin-top: 3px; }
+.item-meta   { font-size: 10.5px; color: var(--text3); margin-top: 2px; }
+.item-row-static { cursor: default; }
+.item-row-static:hover { background: transparent; }
+
+/* Status badges (read-only; ordering happens in Epic via CDS Hooks) */
+.badge-action {
+  font-size: 10px; padding: 2px 8px; border-radius: 9px;
+  background: var(--accent-bg); color: var(--accent);
+  border: 0.5px solid var(--accent-border); flex-shrink: 0;
+}
+.badge-done {
+  font-size: 10px; padding: 2px 8px; border-radius: 9px;
+  background: var(--green-bg); color: var(--green-text); flex-shrink: 0;
+}
+.badge-na {
+  font-size: 10px; padding: 2px 8px; border-radius: 9px;
+  background: var(--bg2); color: var(--text3); flex-shrink: 0;
+}
+.expand-btn {
+  font-size: 11px; color: var(--text3); padding: 2px 5px;
+  border: none; cursor: pointer; background: none; flex-shrink: 0;
+}
+
+/* ── Detail panel ── */
+.item-detail { display: none; border-top: 0.5px solid var(--border); }
+.item-detail.open { display: flex; }
+.detail-left {
+  width: 185px; flex-shrink: 0; padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+  border-right: 0.5px solid var(--border);
+}
+.detail-right {
+  flex: 1; padding: 10px 12px;
+  background: var(--bg2);
+}
+.detail-sched {
+  flex: 1; padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.detail-result {
+  flex: 1; padding: 10px 12px;
+  font-size: 11.5px; color: var(--text); line-height: 1.5;
+}
+.d-label {
+  font-size: 9.5px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text3); margin-bottom: 3px;
+}
+.result-text    { font-size: 11.5px; color: var(--text); line-height: 1.5; }
+.date-text      { font-size: 10px; color: var(--text3); margin-top: 3px; }
+.no-result      { font-size: 10.5px; color: var(--text3); font-style: italic; }
+
+.lab-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.lab-table td { padding: 2px 5px; border-bottom: 0.5px solid var(--border); font-size: 11px; }
+.lab-table tr:last-child td { border-bottom: none; }
+.lab-name { color: var(--text2); width: 40%; }
+.lab-val  { font-weight: 600; color: var(--text); }
+.lab-ref  { color: var(--text3); font-size: 10px; }
+
+.empty-state { text-align: center; padding: 28px; font-size: 12px; color: var(--text3); }
+
+</style>
+</head>
+<body>
+
+<div class="two-col">
+
+  <!-- Left: Discuss today -->
+  <div class="left-col">
+    <div class="discuss-card">
+      <div class="card-title">Discuss today</div>
+      <ul class="discuss-list" id="discussList"></ul>
+    </div>
+  </div>
+
+  <!-- Right: Health supervision status (read-only).
+       Ordering is handled in Epic through the CDS Hooks service, not here. -->
+  <div class="right-col">
+    <div class="controls">
+      <button class="tab active" onclick="setTab('active', this)">Active</button>
+      <button class="tab" onclick="setTab('historical', this)">Historical</button>
+    </div>
+    <div id="main"></div>
+  </div>
+
+</div>
+
+<script>
+const DOB = new Date('2021-02-14');
+
+function ageAt(ds) {
+  if (!ds) return '';
+  const d = new Date(ds);
+  let mo = (d.getFullYear() - DOB.getFullYear()) * 12 + (d.getMonth() - DOB.getMonth());
+  if (d.getDate() < DOB.getDate()) mo--;
+  mo = Math.max(0, mo);
+  if (mo === 0) return Math.round((d - DOB) / 86400000) + 'd old';
+  if (mo < 24) return mo + 'mo old';
+  const y = Math.floor(mo / 12), r = mo % 12;
+  return r ? y + 'y ' + r + 'mo old' : y + 'y old';
+}
+function fmtDate(ds) {
+  if (!ds) return '';
+  return new Date(ds).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function toggleDiscuss(el) {
+  const label = el.nextElementSibling;
+  label.classList.toggle('checked', el.checked);
+}
+
+function renderDiscuss() {
+  const ul = document.getElementById('discussList');
+  if (!ul) return;
+  ul.innerHTML = '';
+  const data = (typeof DISCUSS !== 'undefined' && DISCUSS) ? DISCUSS : [];
+  if (!data.length) {
+    const li = document.createElement('li');
+    li.style.cssText = 'color:var(--text3);font-size:13px;font-style:italic;list-style:none;';
+    li.textContent = 'No counseling items.';
+    ul.appendChild(li); return;
+  }
+  data.forEach((it, idx) => {
+    const li = document.createElement('li'); li.className = 'discuss-item';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.className = 'discuss-check'; cb.id = 'dc' + idx;
+    cb.checked = !!it.done; cb.setAttribute('onchange', 'toggleDiscuss(this)');
+    const lab = document.createElement('label');
+    lab.className = 'discuss-label' + (it.done ? ' checked' : '');
+    lab.setAttribute('for', cb.id);
+    lab.appendChild(document.createTextNode((it.n || '') + ' '));
+    li.appendChild(cb); li.appendChild(lab); ul.appendChild(li);
+  });
+}
+
+/* DATA-START */
+const SECTIONS = [];
+const ITEMS = [];
+/* DATA-END */
+
+/* DISCUSS-START */
+// Counseling / "Discuss today" items -- data-driven + injectable. Default: empty.
+// Each item: { n: <topic>, done: <bool> }.
+// To populate later, inject this array the same way ITEMS is injected.
+const DISCUSS = [];
+/* DISCUSS-END */
+
+
+// ── State ──
+let curTab = 'active';            // 'active' | 'historical'
+let openItems = new Set();        // expanded detail panels
+let states = {};
+ITEMS.forEach(it => { states[it.s + '|' + it.n] = { st: it.st, d: it.d || '', r: it.r || '' }; });
+
+// ── Helpers ──
+const isDone = st => ['complete','ok'].includes(st);
+
+function statusOf(it) {
+  return states[it.s + '|' + it.n]?.st || 'na';
+}
+function toggleDetail(k) {
+  openItems.has(k) ? openItems.delete(k) : openItems.add(k);
+  render();
+}
+
+// ── Tabs ──
+function setTab(t, btn) {
+  curTab = t;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  render();
+}
+
+// ── Render ──  (flat list, no body-system section grouping)
+function render() {
+  const onActive = curTab === 'active';
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  // Active = due/overdue screenings (it.b set by the engine, not yet complete).
+  // Historical = completed screenings.
+  const its = ITEMS.filter(i => {
+    const done = isDone(statusOf(i));
+    return onActive ? (!!i.b && !done) : done;
+  });
+
+  if (!its.length) {
+    main.innerHTML = '<div class="empty-state">' + (onActive ? 'Nothing due right now.' : 'No historical items yet.') + '</div>';
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'items-grid';
+  its.forEach(it => grid.appendChild(buildItem(it)));
+  main.appendChild(grid);
+}
+
+function buildItem(it) {
+  const k = it.s + '|' + it.n;
+  const st = statusOf(it);
+  const done = isDone(st);
+  const isActive = !!it.b && !done;     // a due/overdue screening
+  const isOpen = openItems.has(k);
+  const info = states[k] || {};
+  const ageStr = done ? ageAt(info.d) : '';
+  const ks = k.replace(/'/g, "\\'");
+
+  const wrap = document.createElement('div');
+  wrap.className = 'item' + (isActive ? (st === 'overdue' ? ' is-overdue' : ' is-due') : '');
+
+  const dotCls = isActive
+    ? (st === 'overdue' ? 'dot-ov' : 'dot-du')
+    : done ? 'dot-ok' : 'dot-na';
+
+  // Historical items show result + date + age-at-result inline (no dropdown).
+  let detailLines = '';
+  if (done) {
+    const meta = [info.d ? fmtDate(info.d) : '', ageStr].filter(Boolean).join(' · ');
+    detailLines = `<div class="item-result">${info.r || '—'}</div>` +
+                  (meta ? `<div class="item-meta">${meta}</div>` : '');
+  }
+
+  // Read-only status badge. The actual order is placed in Epic via CDS Hooks.
+  let right;
+  if (st === 'overdue')   right = '<span class="badge-action">Overdue</span>';
+  else if (st === 'due')  right = '<span class="badge-action">Due</span>';
+  else if (done)          right = '<span class="badge-done">Done</span>';
+  else                    right = '<span class="badge-na">N/A</span>';
+
+  // Only due/overdue items expand (to reveal the AAP schedule).
+  const expandBtn = isActive
+    ? `<button class="expand-btn" onclick="event.stopPropagation();toggleDetail('${ks}')">▾</button>`
+    : '';
+
+  const row = document.createElement('div');
+  row.className = 'item-row' + (isActive ? '' : ' item-row-static');
+  if (isActive) row.onclick = () => toggleDetail(k);
+  row.innerHTML = `
+    <div class="status-dot ${dotCls}"></div>
+    <div class="item-main">
+      <div class="item-name">${it.n}</div>
+      ${detailLines}
+    </div>
+    ${right}
+    ${expandBtn}
+  `;
+  wrap.appendChild(row);
+
+  if (isActive && isOpen) {
+    const det = document.createElement('div');
+    det.className = 'item-detail open';
+    det.innerHTML = `
+      <div class="detail-sched">
+        <div class="d-label">AAP guideline schedule</div>
+        <div class="result-text">${it.sched || 'No schedule available.'}</div>
+      </div>`;
+    wrap.appendChild(det);
+  }
+
+  return wrap;
+}
+
+render();
+
+renderDiscuss();
+</script>
+</body>
+</html>

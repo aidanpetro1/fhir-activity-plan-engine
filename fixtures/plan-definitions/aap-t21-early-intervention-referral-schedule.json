@@ -5,7 +5,7 @@
   "status": "active",
   "name": "AAPT21EarlyInterventionReferralSchedule",
   "title": "AAP T21 Early Intervention Referral Schedule",
-  "description": "Early intervention referral for Trisomy 21 patients per AAP guidelines. All T21 patients should be referred to early intervention for speech, fine motor, or gross motor therapy before 3 years of age.",
+  "description": "Refer to early intervention (speech, fine motor, or gross motor therapy) by 3 years of age.",
   "useContext": [
     {
       "code": {

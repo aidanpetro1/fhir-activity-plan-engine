@@ -5,7 +5,7 @@
   "status": "active",
   "name": "AAPT21FeedingAssessmentSchedule",
   "title": "AAP T21 Feeding Assessment Schedule",
-  "description": "Feeding assessment or video swallow study for Trisomy 21 patients per AAP guidelines. Indicated when marked hypotonia or underweight status (below 5th percentile weight-for-length or BMI) is documented. No specific time window — applies whenever the clinical findings are present.",
+  "description": "Feeding assessment or video swallow study when there is marked hypotonia or low weight (below the 5th percentile weight-for-length or BMI). No fixed schedule; ordered when these findings are present.",
   "useContext": [
     {
       "code": {

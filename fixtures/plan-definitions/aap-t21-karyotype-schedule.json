@@ -5,7 +5,7 @@
   "status": "active",
   "name": "AAPT21KaryotypeSchedule",
   "title": "AAP T21 Karyotype Confirmation Schedule",
-  "description": "Karyotype analysis to confirm Trisomy 21 diagnosis per AAP guidelines. Should be performed prenatally where possible; if no prior karyotype result documenting Trisomy 21 exists, a single karyotype analysis should be performed at any point from the prenatal period through age 21.",
+  "description": "Confirm the diagnosis with a single karyotype, prenatally where possible. Done once if no prior karyotype result (full trisomy 21, translocation, or mosaic) is on record.",
   "useContext": [
     {
       "code": {
@@ -35,15 +35,15 @@
     {
       "id": "confirmatory-karyotype",
       "title": "Confirmatory Karyotype Analysis",
-      "description": "Order a karyotype analysis if no prior karyotype result documenting Trisomy 21 is recorded.",
+      "description": "Order a karyotype analysis if no prior karyotype result of any kind is recorded.",
       "definitionCanonical": "https://t21app.example.org/fhir/ActivityDefinition/t21-karyotype-analysis",
       "condition": [
         {
           "kind": "applicability",
           "expression": {
             "language": "text/fhirpath",
-            "expression": "%observations.where(code.coding.where(system='http://loinc.org' and code='29770-5').exists() and valueCodeableConcept.coding.where(system='http://snomed.info/sct' and code='41040004').exists()).empty()",
-            "description": "Applies when no prior karyotype Observation (LOINC 29770-5) with a value of Complete trisomy 21 syndrome (SNOMED 41040004) is recorded. If no such positive karyotype is found, a confirmatory karyotype is scheduled."
+            "expression": "%observations.where(code.coding.where(system='http://loinc.org' and code='29770-5').exists() and valueCodeableConcept.exists()).empty()",
+            "description": "Applies when no prior karyotype Observation (LOINC 29770-5) with any documented result (valueCodeableConcept) is recorded. Any resulted karyotype \u2014 full trisomy 21, translocation, or mosaic \u2014 suppresses re-ordering of a confirmatory karyotype."
           }
         }
       ],

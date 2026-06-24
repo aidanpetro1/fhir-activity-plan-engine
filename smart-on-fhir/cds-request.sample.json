@@ -1,0 +1,8 @@
+{
+  "hookInstance": "d1577c69-dfbe-44ad-ba6d-3e05e953b2ea",
+  "hook": "patient-view",
+  "context": {
+    "userId": "Practitioner/example",
+    "patientId": "patient-3"
+  }
+}

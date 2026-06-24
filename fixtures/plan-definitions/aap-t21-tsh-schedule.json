@@ -5,7 +5,7 @@
   "status": "active",
   "name": "AAPT21TSHSchedule",
   "title": "AAP T21 TSH Screening Schedule",
-  "description": "TSH screening protocol for Trisomy 21 patients per AAP guidelines. Default annual cadence switches immediately to semi-annual (every 6 months) upon detection of anti-thyroid antibodies (SNOMED 165775009). All recurring screens use a +/-1 month window and stop at age 21.",
+  "description": "Newborn and 6-month screens, then annually to age 21. Switches to every 6 months if anti-thyroid antibodies are detected.",
   "useContext": [
     {
       "code": {
@@ -59,7 +59,7 @@
       "definitionCanonical": "https://t21app.example.org/fhir/ActivityDefinition/t21-tsh-screening",
       "relatedAction": [
         {
-          "targetId": "newborn-tsh",
+          "actionId": "newborn-tsh",
           "relationship": "after",
           "offsetRange": {
             "low": {
@@ -95,7 +95,7 @@
       ],
       "relatedAction": [
         {
-          "targetId": "newborn-tsh",
+          "actionId": "newborn-tsh",
           "relationship": "after",
           "offsetRange": {
             "low": {
@@ -145,7 +145,7 @@
       ],
       "relatedAction": [
         {
-          "targetId": "newborn-tsh",
+          "actionId": "newborn-tsh",
           "relationship": "after",
           "offsetRange": {
             "low": {

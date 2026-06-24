@@ -5,7 +5,7 @@
   "status": "active",
   "name": "AAPT21OphthalmologyReferralSchedule",
   "title": "AAP T21 Ophthalmology Referral Schedule",
-  "description": "Ophthalmology referral for Trisomy 21 patients per AAP guidelines. All T21 patients should be referred to ophthalmology by 6 months of age.",
+  "description": "Refer to ophthalmology by 6 months of age.",
   "useContext": [
     {
       "code": {

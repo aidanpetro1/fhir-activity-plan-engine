@@ -16,7 +16,7 @@ fixtures_path = "C:/T21/fixtures"
 patients_root = Path("C:/T21/patients")
 output_path = "C:/T21/debug_timeline.html"
 
-activity_definitions, plan_definitions = load_fixtures(fixtures_path)
+activity_definitions, plan_definitions, compiled_conditions = load_fixtures(fixtures_path)
 
 # Build canonical URL -> human label from ActivityDefinitions
 label_map = {}
@@ -30,7 +30,8 @@ patients_data = []
 for pd in patient_dirs:
     patient, observations, procedures, encounters = load_patient_data(str(pd))
     srs, _, flags = apply_plan(
-        patient, activity_definitions, plan_definitions, observations, procedures, encounters
+        patient, activity_definitions, plan_definitions, compiled_conditions,
+        observations, procedures, encounters
     )
     overdue_sr_ids = set()
     for f in flags:

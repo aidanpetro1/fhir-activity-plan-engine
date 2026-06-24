@@ -5,7 +5,7 @@
   "status": "active",
   "name": "AAPT21TTESchedule",
   "title": "AAP T21 Transthoracic Echocardiogram Schedule",
-  "description": "Transthoracic echocardiogram for Trisomy 21 patients per AAP guidelines. All T21 patients should receive a TTE within the first month of life to evaluate for congenital heart defects.",
+  "description": "One transthoracic echocardiogram by 1 month of age to evaluate for congenital heart defects.",
   "useContext": [
     {
       "code": {

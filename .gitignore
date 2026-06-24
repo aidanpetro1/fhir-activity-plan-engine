@@ -22,3 +22,16 @@ Thumbs.db
 
 # Test files
 test.txt
+
+# Generated dashboard outputs (rebuilt by build_supervision_dashboard.py / the app)
+/supervision_dashboard.*.html
+/debug_timeline.html
+
+# Engine-persisted state (regenerated each run)
+patients/*/service-requests/
+
+# Local env / secrets
+smart-on-fhir/.env
+
+# Personal notes (not committed)
+smart-on-fhir/CDS_HOOKS_PLAN.md

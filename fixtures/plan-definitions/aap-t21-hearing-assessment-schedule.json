@@ -5,7 +5,7 @@
   "status": "active",
   "name": "AAPT21HearingAssessmentSchedule",
   "title": "AAP T21 Hearing Assessment Schedule",
-  "description": "Objective hearing assessment (e.g., ABR or OAE) for Trisomy 21 patients per AAP guidelines. All T21 patients should receive an objective hearing assessment within the first 6 months of life.",
+  "description": "Objective hearing assessment (ABR or OAE) by 6 months of age.",
   "useContext": [
     {
       "code": {
