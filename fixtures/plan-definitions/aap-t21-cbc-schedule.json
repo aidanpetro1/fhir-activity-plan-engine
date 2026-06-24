@@ -5,7 +5,7 @@
   "status": "active",
   "name": "AAPT21CBCSchedule",
   "title": "AAP T21 CBC Schedule",
-  "description": "Complete blood count for Trisomy 21 patients per AAP guidelines. Initial CBC by day 3 of life, then annually through age 21 to monitor for hematologic abnormalities.",
+  "description": "Complete blood count in the newborn period, then annually to age 21, to monitor for hematologic abnormalities.",
   "useContext": [
     {
       "code": {
@@ -59,7 +59,7 @@
       "definitionCanonical": "https://t21app.example.org/fhir/ActivityDefinition/t21-cbc",
       "relatedAction": [
         {
-          "targetId": "newborn-cbc",
+          "actionId": "newborn-cbc",
           "relationship": "after",
           "offsetRange": {
             "low": {

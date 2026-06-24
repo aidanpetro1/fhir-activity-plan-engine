@@ -5,7 +5,7 @@
   "status": "active",
   "name": "AAPT21AntithyroidAntibodySchedule",
   "title": "AAP T21 Anti-Thyroid Antibody Screening Schedule",
-  "description": "Anti-thyroid antibody screening for Trisomy 21 patients per AAP guidelines. At least once in the first year of life. A positive result triggers a cadence change in the TSH screening schedule (see aap-t21-tsh-schedule).",
+  "description": "Screen for anti-thyroid antibodies at least once by 12 months of age. A positive result switches TSH screening to every 6 months.",
   "useContext": [
     {
       "code": {

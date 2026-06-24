@@ -52,6 +52,18 @@ def latest_matching_obs(observations, code):
     return max(matches, key=lambda o: to_date(o.effectiveDateTime)) if matches else None
 
 
+def citation(adef):
+    """AAP guideline citation from the ActivityDefinition.relatedArtifact
+    (type=citation), or None. This is the data-driven source for an order's
+    guideline text shown in the dashboard."""
+    for ra in (adef.relatedArtifact or []):
+        if getattr(ra, "type", None) == "citation":
+            txt = getattr(ra, "citation", None) or getattr(ra, "display", None) or getattr(ra, "label", None)
+            if txt:
+                return str(txt).strip()
+    return None
+
+
 def build_items(patient_dir):
     ad, pd_, cc = logic.load_fixtures(FIXTURES)
     patient, obs, procs, encs = logic.load_patient_data(patient_dir)
@@ -95,13 +107,16 @@ def build_items(patient_dir):
         if st == "na":
             continue  # not an active orderable for this patient — hidden
 
-        g = (adef.description or "").strip()
-        if plan_desc.get(adef.url):
-            g = (g + " " + plan_desc[adef.url]).strip()
+        g = citation(adef)
+        if not g:
+            g = (adef.description or "").strip()
+            if plan_desc.get(adef.url):
+                g = (g + " " + plan_desc[adef.url]).strip()
 
         item = {"s": "", "n": adef.title, "st": st,
                 "b": "order" if st in ("overdue", "due") else None,
-                "g": g, "d": "", "r": ""}
+                "g": g, "d": "", "r": "",
+                "sched": plan_desc.get(adef.url, "")}
         if st == "complete" and ful:
             item["d"] = to_date(ful.effectiveDateTime).isoformat()
             item["r"] = fmt_result(ful)

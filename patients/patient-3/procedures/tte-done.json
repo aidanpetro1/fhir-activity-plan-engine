@@ -15,5 +15,5 @@
   "subject": {
     "reference": "Patient/3"
   },
-  "occurrenceDateTime": "2021-05-01"
+  "performedDateTime": "2021-05-01"
 }

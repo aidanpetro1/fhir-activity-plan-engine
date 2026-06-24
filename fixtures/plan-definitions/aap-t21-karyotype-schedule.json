@@ -5,7 +5,7 @@
   "status": "active",
   "name": "AAPT21KaryotypeSchedule",
   "title": "AAP T21 Karyotype Confirmation Schedule",
-  "description": "Karyotype analysis to confirm a Down syndrome diagnosis per AAP guidelines. Should be performed prenatally where possible; if no prior karyotype result of any kind (full trisomy 21, translocation, or mosaic) is recorded, a single karyotype analysis should be performed at any point from the prenatal period through age 21.",
+  "description": "Confirm the diagnosis with a single karyotype, prenatally where possible. Done once if no prior karyotype result (full trisomy 21, translocation, or mosaic) is on record.",
   "useContext": [
     {
       "code": {
